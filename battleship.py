@@ -7,8 +7,10 @@ from structures.field import Field
 
 
 if __name__ == "__main__":
-    random_strat = RandomStrategy((9, 9), 5, 3, 6, 1)
+    random_strat = RandomStrategy((8, 8), 5, 3, 6, 1)
     board = random_strat.get_board()
+    board.draw_field()
+    print()
     # board.draw_field()
     moves = 0
     while random_strat.get_remaining_boats() > 0:

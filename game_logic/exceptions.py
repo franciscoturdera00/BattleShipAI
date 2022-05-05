@@ -4,3 +4,6 @@ class OutOfBounds(Exception):
 
 class IllegalMove(Exception):
     ...
+
+
+class IllegalPlacement(Exception): ...
