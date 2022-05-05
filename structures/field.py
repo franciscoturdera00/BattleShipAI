@@ -1,5 +1,5 @@
 from game_logic.exceptions import IllegalMove, OutOfBounds
-from structures.space import Space
+from structures.space import Space, SpaceStatus
 from structures.direction import Direction
 from colorama import Fore
 
@@ -34,7 +34,7 @@ class Field:
         elif anchor_x != final_x:
             return self.__add_boat(anchor_x, final_x, anchor_y, True)
         else:  # Singleton
-            self.dimensions[anchor_y][anchor_x].has_boat = True
+            self.dimensions[anchor_y][anchor_x].insert_boat()
 
     def hit(self, hit_x, hit_y) -> bool:
         return self.dimensions[hit_y][hit_x].hit()
@@ -45,11 +45,14 @@ class Field:
             print(" -- " * len(y))
             for space in y:
                 # print((space.x, space.y), end="")
-                if space.has_boat and space.is_hit:
+                if space.has_boat() and space.is_hit:
                     print(Fore.RED + " X ", end="")
                     print(Fore.WHITE + "|", end="")
-                elif space.has_boat and not hide:
+                elif space.has_boat() and not hide:
                     print(Fore.GREEN + " O ", end="")
+                    print(Fore.WHITE + "|", end="")
+                elif not space.has_boat() and space.is_hit:
+                    print(Fore.YELLOW + " M ", end="")
                     print(Fore.WHITE + "|", end="")
                 else:
                     print(Fore.BLUE + " E ", end="")
@@ -58,9 +61,9 @@ class Field:
     def __can_add_boat(self, begin, end, anchor, vertical: bool) -> bool:
         step = int((end - begin) / abs(end - begin))
         for val in range(begin, end, step):
-            if vertical and self.dimensions[anchor][val].has_boat:
+            if vertical and self.dimensions[anchor][val].has_boat():
                 return False
-            elif self.dimensions[val][anchor].has_boat:
+            elif self.dimensions[val][anchor].has_boat():
                 return False
         return True
 
@@ -69,6 +72,6 @@ class Field:
         # Add boat
         for val in range(begin, end, step):
             if vertical:
-                self.dimensions[anchor][val].has_boat = True
+                self.dimensions[anchor][val].insert_boat()
             else:
-                self.dimensions[val][anchor].has_boat = True
+                self.dimensions[val][anchor].insert_boat()
