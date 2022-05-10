@@ -33,4 +33,15 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        python -m pytest --cov=./
+        python -m pytest --cov=./ --cov-report=xml:./coverage/reports/coverage.xml
+
+    - name: Upload Coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        flags: pytest # optional
+        directory: ./coverage/reports/
+        files: ./coverage/reports/coverage.xml
+        name: codecov-umbrella # optional
+        fail_ci_if_error: true # optional (default = false)
+        verbose: true # optional (default = false)
+        patch: off
