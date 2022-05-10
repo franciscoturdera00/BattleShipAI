@@ -13,6 +13,8 @@ class Space:
         self.is_hit = False
 
     def hit(self):
+        if self.is_hit:
+            raise IllegalMove("Space (%d, %d) has already been hit" % (self.x, self.y))
         self.is_hit = True
         if self.has_boat():
             return True
