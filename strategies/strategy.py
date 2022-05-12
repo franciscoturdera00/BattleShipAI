@@ -9,16 +9,14 @@ class CreateStrategy(ABC):
 
     backup: "CreateStrategy"
 
-    def __init__(self, dimensions, backup: Field, *boats: int):
+    def __init__(self, dimensions, backup: Field = None):
         self.dimensions = dimensions
-        self.board = self.create_board(None, *boats)
-        self.populated_spots = sum(boats)
         self.backup = backup
 
     @abstractmethod
-    def create_board(self, board, *boats: int) -> Field:
+    def create_board(self, *boats: int) -> Field:
         """Given a series of lengths of boats, create its playing board"""
-        pass
+        self.populated_spots = sum(boats)
 
 
 class PlayStrategy(ABC):
@@ -41,9 +39,10 @@ class PlayStrategy(ABC):
         pass
 
     @abstractmethod
-    def feedback(self, x_coord: int, y_coord: int, hit: bool) -> None:
+    def feedback(self, coords: Tuple[int, int], hit: bool) -> None:
         """Update knowledge based on feedback from attack"""
-        pass
+        if hit:
+            self.success += 1
 
 
 class Strategy:
@@ -54,19 +53,19 @@ class Strategy:
     def __init__(self, create_strat: CreateStrategy, play_strat: PlayStrategy, dimensions, *boats):
         self.create_strategy = create_strat
         self.play_strategy = play_strat
+        self.board = self.create_board(*boats)
 
     def create_board(self, *boats: int) -> Field:
-        print(boats)
-        return self.create_strategy.create_board(None, *boats)
+        return self.create_strategy.create_board(*boats)
 
     def get_board(self):
-        return self.create_strategy.board
+        return self.board
 
-    def get_remaining_boats(self):
+    def get_remaining_boat_spaces(self):
         return self.create_strategy.populated_spots - self.play_strategy.success
 
     def attack(self) -> Tuple[int, int]:
         return self.play_strategy.attack()
 
-    def feedback(self, x_coord: int, y_coord: int, hit: bool) -> None:
-        self.play_strategy.feedback(x_coord, y_coord, hit)
+    def feedback(self, coords: Tuple[int, int], hit: bool) -> None:
+        self.play_strategy.feedback(coords, hit)
