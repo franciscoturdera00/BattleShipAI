@@ -43,6 +43,9 @@ class PlayStrategy(ABC):
         """Update knowledge based on feedback from attack"""
         if hit:
             self.success += 1
+        self.attacked.add(coords)
+        if self.backup:
+            self.backup.feedback(coords, hit)
 
 
 class Strategy:

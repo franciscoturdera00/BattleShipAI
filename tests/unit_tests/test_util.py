@@ -1,5 +1,4 @@
-from structures.field import Field
-from util.util import calculate_non_hit_spaces, generate_random_coordinate
+from util.util import generate_random_coordinate
 
 
 def test_generate_random_coordinate_basic():
@@ -24,14 +23,3 @@ def test_generate_random_coordinate_with_list():
     for i in range(size):
         for j in range(size):
             assert (i, j) in unavailable
-
-
-def test_calculate_non_empty_spaces():
-    board = Field(5, 5)
-    assert calculate_non_hit_spaces(board) == 25
-    board.hit(1, 1)
-    assert calculate_non_hit_spaces(board) == 24
-    board.add_boat(1, 4, 4)
-    assert calculate_non_hit_spaces(board) == 24
-    board.hit(4, 4)
-    assert calculate_non_hit_spaces(board) == 23

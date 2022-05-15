@@ -1,5 +1,5 @@
-from game_logic.exceptions import IllegalMove, OutOfBounds
-from structures.space import Space, SpaceStatus
+from game_logic.exceptions import IllegalMove
+from structures.space import Space
 from structures.direction import Direction
 from colorama import Fore
 
@@ -14,7 +14,7 @@ class Field:
 
         self.outter_limits = (dimension_x, dimension_y)
 
-    def can_add_boat(self, length: int, anchor_x: int, anchor_y: int, direction: Direction = None) -> bool:
+    def can_add_boat(self, length: int, anchor_x: int, anchor_y: int, direction: Direction) -> bool:
         if Direction.out_of_bounds((anchor_x, anchor_y), length, self.outter_limits, direction):
             return False
         final_x, final_y = Direction.calculate_endpoint((anchor_x, anchor_y), length, direction)
@@ -25,7 +25,7 @@ class Field:
         else:  # Singeton
             return not self.spaces[anchor_y][anchor_x].has_boat()
 
-    def add_boat(self, length: int, anchor_x: int, anchor_y, direction: Direction = None) -> bool:
+    def add_boat(self, length: int, anchor_x: int, anchor_y, direction: Direction):
         if not self.can_add_boat(length, anchor_x, anchor_y, direction):
             raise IllegalMove("Boat cannot be located at (%d, %d)" % (anchor_x, anchor_y))
         final_x, final_y = Direction.calculate_endpoint((anchor_x, anchor_y), length, direction)
@@ -68,20 +68,30 @@ class Field:
     def draw_field(self, hide=False):
         print(self.build_field(hide))
 
+    def calculate_non_hit_spaces(self) -> int:
+        num = 0
+        for y in self.spaces:
+            for space in y:
+                if not space.is_hit:
+                    num += 1
+        return num
+
     def __can_add_boat(self, begin, end, anchor, vertical: bool) -> bool:
+        length = abs(end - begin)
         step = int((end - begin) / abs(end - begin))
-        for val in range(begin, end, step):
-            if vertical and self.spaces[anchor][val].has_boat():
+        for i in range(length + 1):
+            if vertical and self.spaces[anchor][begin + (i * step)].has_boat():
                 return False
-            elif self.spaces[val][anchor].has_boat():
+            elif self.spaces[begin + (i * step)][anchor].has_boat():
                 return False
         return True
 
     def __add_boat(self, begin, end, anchor, vertical: bool):
-        step = int((end - begin) / abs(end - begin))
+        length = abs(end - begin)
+        step = int((end - begin) / length)
         # Add boat
-        for val in range(begin, end, step):
+        for i in range(length + 1):
             if vertical:
-                self.spaces[anchor][val].insert_boat()
+                self.spaces[anchor][begin + (i * step)].insert_boat()
             else:
-                self.spaces[val][anchor].insert_boat()
+                self.spaces[begin + (i * step)][anchor].insert_boat()

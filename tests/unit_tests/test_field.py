@@ -7,45 +7,39 @@ import pytest
 
 def test_can_add_boat_basic():
     field = Field(1, 1)
-    assert field.can_add_boat(1, 0, 0) == True
+    assert field.can_add_boat(1, 0, 0, Direction.EAST) == True
     # Ensure can_add_boat does NOT add boat
-    assert field.can_add_boat(1, 0, 0) == True
+    assert field.can_add_boat(1, 0, 0, Direction.EAST) == True
 
     field.spaces[0][0].status = SpaceStatus.BOAT
-    assert field.can_add_boat(1, 0, 0) == False
+    assert field.can_add_boat(1, 0, 0, Direction.EAST) == False
 
 
 def test_can_add_boat():
-    field = Field(1, 1)
-    assert field.can_add_boat(1, 0, 0, Direction.SOUTH) == True
-
     bigger_field = Field(6, 6)
     bigger_field.can_add_boat(2, 3, 3, Direction.NORTH) == True
     bigger_field.can_add_boat(2, 3, 3, Direction.EAST) == True
     bigger_field.can_add_boat(2, 3, 3, Direction.WEST) == True
     bigger_field.can_add_boat(2, 3, 3, Direction.SOUTH) == True
 
-    with pytest.raises(ValueError):
-        bigger_field.can_add_boat(2, 3, 3)
-
     bigger_field.can_add_boat(5, 3, 3, Direction.SOUTH) == False
 
     empty_field = Field(5, 5)
     assert empty_field.can_add_boat(4, -1, 0, Direction.EAST) == False
     assert empty_field.can_add_boat(4, 0, -1, Direction.SOUTH) == False
-    assert empty_field.can_add_boat(1, -1, 0) == False
-    assert empty_field.can_add_boat(1, 0, -1) == False
-    assert empty_field.can_add_boat(1, 5, 0) == False
-    assert empty_field.can_add_boat(1, 0, 5) == False
+    assert empty_field.can_add_boat(1, -1, 0, Direction.EAST) == False
+    assert empty_field.can_add_boat(1, 0, -1, Direction.EAST) == False
+    assert empty_field.can_add_boat(1, 5, 0, Direction.EAST) == False
+    assert empty_field.can_add_boat(1, 0, 5, Direction.EAST) == False
     assert empty_field.can_add_boat(3, 5, 0, Direction.WEST) == False
     assert empty_field.can_add_boat(3, 0, 5, Direction.NORTH) == False
 
 
 def test_add_boat_raises():
     field = Field(1, 1)
-    field.add_boat(1, 0, 0)
+    field.add_boat(1, 0, 0, Direction.EAST)
     with pytest.raises(IllegalMove):
-        field.add_boat(1, 0, 0)
+        field.add_boat(1, 0, 0, Direction.EAST)
 
 
 def test_add_boat_east():
@@ -81,6 +75,7 @@ def test_add_boat_west():
 def test_add_boat_north():
     field = Field(6, 6)
     field.add_boat(3, 4, 4, Direction.NORTH)
+    field.draw_field()
     assert field.spaces[5][4].has_boat() == False
     assert field.spaces[4][4].has_boat()
     assert field.spaces[3][4].has_boat()
@@ -90,7 +85,7 @@ def test_add_boat_north():
 
 def test_add_boat_singleton():
     field = Field(6, 6)
-    field.add_boat(1, 3, 3)
+    field.add_boat(1, 3, 3, Direction.EAST)
     assert field.spaces[3][3].has_boat()
     assert field.spaces[3][4].has_boat() == False
     assert field.spaces[4][3].has_boat() == False
@@ -106,3 +101,14 @@ def test_add_boat_singleton_with_direction():
     assert field.spaces[4][3].has_boat() == False
     assert field.spaces[3][2].has_boat() == False
     assert field.spaces[2][3].has_boat() == False
+
+
+def test_calculate_non_empty_spaces():
+    board = Field(5, 5)
+    assert board.calculate_non_hit_spaces() == 25
+    board.hit(1, 1)
+    assert board.calculate_non_hit_spaces() == 24
+    board.add_boat(1, 4, 4, Direction.EAST)
+    assert board.calculate_non_hit_spaces() == 24
+    board.hit(4, 4)
+    assert board.calculate_non_hit_spaces() == 23
