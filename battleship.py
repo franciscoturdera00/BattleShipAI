@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 
 from game_logic.ai_play import play_alone
+from strategies.local_strategy import LocalStrategy
 from strategies.random_strategy import RandomStrategy
 from structures.direction import Direction
 from structures.field import Field
 
 
 if __name__ == "__main__":
-    random_strat = RandomStrategy((8, 8), 5, 3, 6, 1)
-    board = random_strat.get_board()
+    # strat = RandomStrategy((8, 8), 5, 3, 6, 1)
+    strat = LocalStrategy((8, 8), 5, 3, 6, 4)
+    board = strat.get_board()
     board.draw_field()
     print()
     # board.draw_field()
-    moves = play_alone(random_strat, board, True)
+    moves = play_alone(strat, board, True)
     print()
     print("Moves: %s" % moves)
     # moves = 0

@@ -24,8 +24,6 @@ class RandomCreateStrategy(CreateStrategy):
             set_boat = False
             while not set_boat and redo < max_redo:
                 direction = Direction.generate_random()
-                if boat_length == 1:
-                    direction = None
                 x, y = generate_random_coordinate(self.dimensions[0], self.dimensions[1])
                 if board.can_add_boat(boat_length, x, y, direction):
                     board.add_boat(boat_length, x, y, direction)
@@ -44,13 +42,12 @@ class RandomPlayStrategy(PlayStrategy):
 
     def attack(self) -> Tuple[int, int]:
         x, y = generate_random_coordinate(self.dimensions[0], self.dimensions[1], self.attacked)
-        self.attacked.add((x, y))
         return x, y
 
     def feedback(self, coords: Tuple[int, int], hit: bool) -> None:
         super().feedback(coords, hit)
         if hit:
-            self.opponent.add_boat(1, coords[0], coords[1])
+            self.opponent.add_boat(1, coords[0], coords[1], Direction.EAST)
             self.opponent.hit(coords[0], coords[1])
 
 

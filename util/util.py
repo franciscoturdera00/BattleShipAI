@@ -1,6 +1,5 @@
 import random
-
-from structures.field import Field
+from typing import Tuple
 
 
 def generate_random_coordinate(max_x, max_y, unavailable=None):
@@ -15,10 +14,7 @@ def generate_random_coordinate(max_x, max_y, unavailable=None):
     return final_x, final_y
 
 
-def calculate_non_hit_spaces(board: Field) -> int:
-    num = 0
-    for y in board.spaces:
-        for space in y:
-            if not space.is_hit:
-                num += 1
-    return num
+def calculate_grid_distance(start: Tuple[int, int], end: Tuple[int, int]):
+    return abs(start[0] - end[0]) + abs(start[1] - end[1])
+
+        
