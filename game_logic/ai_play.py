@@ -12,7 +12,27 @@ def play_alone(strategy: Strategy, board: Field, draw_progress: bool = False) ->
         # sleep(1)
         hit = board.hit(attack_x, attack_y)
         strategy.feedback((attack_x, attack_y), hit)
-        if draw_progress:
+        if hit and draw_progress:
             board.draw_field()
             print()
     return moves
+
+
+# def compete(strategy: Strategy):
+#     ai_up = False
+#     turn = int(input())
+#     if turn == 1:
+#         ai_up = True
+#     # Give ships
+#     ...
+#     while True:
+#         if ai_up:
+#             strategy.attack()
+#             feedback = input().split(":")
+#             x, y = feedback[0].split(",")
+#             hit = feedback[1] == "hit"
+#             strategy.feedback((x, y), hit)
+#             ai_up = False
+#         else:
+#             input()
+#             ai_up = True
