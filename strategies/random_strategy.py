@@ -46,9 +46,6 @@ class RandomPlayStrategy(PlayStrategy):
 
     def feedback(self, coords: Tuple[int, int], hit: bool) -> None:
         super().feedback(coords, hit)
-        if hit:
-            self.opponent.add_boat(1, coords[0], coords[1], Direction.EAST)
-            self.opponent.hit(coords[0], coords[1])
 
 
 class RandomStrategy(Strategy):

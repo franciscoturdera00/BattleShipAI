@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Tuple
+from structures.direction import Direction
 
 from structures.field import Field
 
@@ -41,9 +42,11 @@ class PlayStrategy(ABC):
     @abstractmethod
     def feedback(self, coords: Tuple[int, int], hit: bool) -> None:
         """Update knowledge based on feedback from attack"""
-        if hit:
-            self.success += 1
         self.attacked.add(coords)
+        if hit:
+            self.opponent.add_boat(1, coords[0], coords[1], Direction.EAST)
+            self.opponent.hit(coords[0], coords[1])
+            self.success += 1
         if self.backup:
             self.backup.feedback(coords, hit)
 

@@ -1,4 +1,5 @@
 from typing import Tuple
+from strategies.educated_guess import PlayEducatedGuess
 from strategies.random_strategy import RandomCreateStrategy, RandomPlayStrategy
 from strategies.strategy import PlayStrategy, Strategy
 from structures.direction import Direction
@@ -41,6 +42,7 @@ class LocalPlayStrategy(PlayStrategy):
                 attack = self.__attack_opposite_end(direction)
                 if attack:
                     return attack
+            return self.backup.attack()
         return self.__attack_around(last_hit)
 
     def __attack_around(self, last_hit):
@@ -71,8 +73,6 @@ class LocalPlayStrategy(PlayStrategy):
     def feedback(self, coords: Tuple[int, int], hit: bool) -> None:
         super().feedback(coords, hit)
         if hit:
-            self.opponent.add_boat(1, coords[0], coords[1], Direction.EAST)
-            self.opponent.hit(coords[0], coords[1])
             self.hit_list.append(coords)
             self.turns_since_last_hit = 0
         elif self.turns_since_last_hit:
@@ -82,5 +82,5 @@ class LocalPlayStrategy(PlayStrategy):
 class LocalStrategy(Strategy):
     def __init__(self, dimensions, *boats):
         create_strat = RandomCreateStrategy(dimensions)
-        play_strat = LocalPlayStrategy(dimensions, RandomPlayStrategy(dimensions))
+        play_strat = LocalPlayStrategy(dimensions, PlayEducatedGuess(dimensions, RandomPlayStrategy(dimensions)))
         super().__init__(create_strat, play_strat, dimensions, *boats)

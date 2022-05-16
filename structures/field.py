@@ -76,6 +76,15 @@ class Field:
                     num += 1
         return num
 
+    def calculate_linear_empty_space(self, start_point, direction: Direction):
+        distance = 1
+        while not Direction.out_of_bounds(start_point, distance + 1, self.outter_limits, direction):
+            space_x, space_y = Direction.calculate_endpoint(start_point, distance + 1, direction)
+            if not (self.spaces[space_y][space_x].is_hit or self.spaces[space_y][space_x].has_boat()):
+                distance += 1
+            return distance
+        return distance
+
     def __can_add_boat(self, begin, end, anchor, vertical: bool) -> bool:
         length = abs(end - begin)
         step = int((end - begin) / abs(end - begin))

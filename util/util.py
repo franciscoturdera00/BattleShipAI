@@ -16,5 +16,3 @@ def generate_random_coordinate(max_x, max_y, unavailable=None):
 
 def calculate_grid_distance(start: Tuple[int, int], end: Tuple[int, int]):
     return abs(start[0] - end[0]) + abs(start[1] - end[1])
-
-        
